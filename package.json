@@ -1,0 +1,9 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.1",
+    "@openzeppelin/contracts": "^4.8.0",
+    "hardhat": "^2.12.6"
+  },
+  "packageManager": "pnpm@7.24.3"
+}
