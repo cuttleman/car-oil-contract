@@ -1,8 +1,8 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 async function main() {
   const CarOil = await ethers.getContractFactory("CarOil");
-  const carOil = await CarOil.deploy({ value: "10000000000000000" });
+  const carOil = await upgrades.deployProxy(CarOil);
 
   await carOil.deployed();
 

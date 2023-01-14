@@ -25,8 +25,9 @@ contract CarOil is Ownable {
     event Claim(address from, address to, uint amount, uint when);
     event ValueReceived(address from, uint amount, uint when);
 
-    constructor() payable {}
-
+    function _getErc20BalanceOf(address _token) internal view returns (uint256){
+      return IERC20(_token).balanceOf(address(this));
+    }
 
     function deposit(address _token, uint256 _amount) public {
       IERC20(_token).transferFrom(msg.sender, address(this), _amount);
@@ -40,7 +41,7 @@ contract CarOil is Ownable {
     }
 
 
-    function claim(address _token, address _targetUser) public onlyOwner() {
+    function claim(address _token, address _targetUser) public onlyOwner {
       uint256 carOilBalance = _getErc20BalanceOf(_token);
 
       IERC20 erc20 = IERC20(_token);
@@ -63,8 +64,9 @@ contract CarOil is Ownable {
       emit Claim(address(this), _targetUser ,carOilBalance, block.timestamp);
     }
 
-    function _getErc20BalanceOf(address _token) internal view returns (uint256){
-      return IERC20(_token).balanceOf(address(this));
+    function withdraw(address payable _to, uint256 _amount) public onlyOwner {
+      (bool sent,) = _to.call{value: _amount}("");
+      require(sent, "Failed to send BNB");
     }
 
     function history() external view returns (ClaimHistory[] memory) {
