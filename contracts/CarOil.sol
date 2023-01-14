@@ -23,6 +23,7 @@ contract CarOil is Ownable {
     
     event Deposit(address from, address to, uint amount, uint when);
     event Claim(address from, address to, uint amount, uint when);
+    event ValueReceived(address from, uint amount, uint when);
 
     constructor() payable {}
 
@@ -30,7 +31,10 @@ contract CarOil is Ownable {
     function deposit(address _token, uint256 _amount) public {
       IERC20(_token).transferFrom(msg.sender, address(this), _amount);
 
-      contributors.push(Contributor(msg.sender, _amount));
+      contributors.push();
+	    uint256 newIndex = contributors.length - 1;
+	    contributors[newIndex].user = msg.sender;
+      contributors[newIndex].amount = _amount;
 
       emit Deposit(msg.sender, address(this), _amount, block.timestamp); 
     }
@@ -48,7 +52,11 @@ contract CarOil is Ownable {
       
       IERC20(_token).transferFrom(address(this), _targetUser, carOilBalance);
 
-      claimHistories.push(ClaimHistory(block.timestamp, carOilBalance, contributors));
+      claimHistories.push();
+	    uint256 newIndex = claimHistories.length - 1;
+	    claimHistories[newIndex].when = block.timestamp;
+      claimHistories[newIndex].totalAmount = carOilBalance;
+      claimHistories[newIndex].contributors = contributors;
 
       delete contributors;
        
@@ -69,5 +77,9 @@ contract CarOil is Ownable {
 
     function nativeBalance() external view returns (uint256) {
       return address(this).balance;
+    }
+
+    receive() external payable {
+      emit ValueReceived(msg.sender, msg.value, block.timestamp);
     }
 }
